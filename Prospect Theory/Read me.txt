@@ -1,0 +1,26 @@
+
+This folder includes the 5 files that are needed to fit the hierarchical implementation of cumulative prospect theory in:
+
+Nilsson, H., Rieskamp, J., & Wagenmakers, E-J. (2011). Hierarchical Bayesian parameter estimation for cumulative prospect theory. Journal of Mathematical Psychology, 55, 84-93. 
+
+The data comes from 
+Rieskamp, J. (2008). The probabilistic nature of preferential choice. Journal of experimental psychology. Learning, memory, and cognition, 34, 1446-65. 
+
+
+Some explanations are included in cpt_hierarchical_ model.txt and R-code.txt.
+
+txt-FILES: 
+1) 	cpt_hierarchical_ model.txt: Defines the hierarchical implementation of cumulative prospect theory (this file is read by WinBugs). 
+
+2)	R-code.txt: R code that calls WinBugs and “tells” it to fit the data from Rieskamp (2008).
+
+3-4)	GambleA.txt, GambleB.txt: Information about the 180 gamble-pairs used in Rieskamp (2008).
+
+5)	Rieskamp_data.txt: Data from Rieskamp (2008).
+        
+	The data represents the choices of 30 subjects for 180 pairs of gambles. 
+	Each column represents one subject. Each row the choice for one pair of gambles.
+	1=choice of gamble A (see GambleA.txt), 0=choice of gamble B (see GambleB.txt) 
+
+If you have any questions, please do not hesitate to contact Håkan Nilsson at hakan.nilsson@psyk.uu.se
+

@@ -1,0 +1,75 @@
+# This code fits the hierarchical Bayesian implementation of cumulative prospect theory to the data from 
+# Rieskamp (2008; JEP:LMC). Before running the code: install WinBugs and the R2WinBUGS-package. 
+
+
+# The first step is to set the working directory, e.g.: 
+setwd("C:\\Documents and Settings\\Rieskamp")
+
+
+# Load the R2WinBUGS-package and define where WinBugs is installed
+library(R2WinBUGS)
+bugsdir = "C:\\Program files\\WinBUGS14"
+
+
+# Load information about the 180 gamble-pairs used in Rieskamp (2008). GambleA.txt and GambleB.txt are 
+# structured as follows: value of outcome 1 (column 1), probability of outcome 1 (column 2), value of outcome 2 # (column 3), probability of outcome 2 (column 4) (gambles in rows).
+prospects.b <- as.matrix(read.table("GambleB.txt"))
+prospects.a <- as.matrix(read.table("GambleA.txt"))
+
+
+# Load data (choice made by the first participant when presented the second gamble-pair is saved in
+# column 1 row 2)
+rawdata <- as.matrix(read.table("Rieskamp_data.txt"))
+
+
+# Define what information that should be passed on to WinBugs
+data  = list("prospects.a", "prospects.b", "rawdata") 
+
+
+# Define initial values for variables (variables are defined in: cpt_hierarchical_model.txt)
+inits = function()
+{
+
+  list(mu.phi.alpha = 0.7, sigma.phi.alpha = 1, mu.phi.beta = 0.7,
+sigma.phi.beta = 1,
+       mu.phi.gamma = 0.7, sigma.phi.gamma = 1, mu.phi.delta = 0.7,
+sigma.phi.delta = 1,
+       lmu.lambda = 0, lsigma.lambda = 0.5, lmu.luce = 0,
+sigma.phi.luce = 0.5)
+
+}
+
+
+# Define the variables of interest. WinBugs will return these to R when the analysis is finished (and WinBugs is # closed).	
+parameters = c("alpha", "mu.phi.alpha", "mu.alpha", "sigma.phi.alpha", "beta", "mu.phi.beta", "mu.beta", "sigma.phi.beta", "gamma", "mu.phi.gamma", "mu.gamma", "sigma.phi.gamma", "delta", "mu.phi.delta", "mu.delta", "sigma.phi.delta", "lambda", "lmu.lambda", "mu.lambda", "lsigma.lambda", "luce", "lmu.luce", "mu.luce", "lsigma.luce")
+
+
+# The following command calls WinBUGS with specific options.
+# For a detailed description see Sturtz, Ligges, & Gelman (2005). But, for clarity:
+# n.chains: the number of chains generated
+# n.iter: the number of samples sampled in each chain
+# n.burnin: the number of burn-in samples
+# n.thin: WinBugs will return each x:th sample to R if n.thin is set to x
+# debug: TRUE=WinBugs will remain open when analysis is finished (data is returned to R when WinBugs is closed) # FALSE=WinBugs will automatically close when analysis is finished.
+
+hierarchical = bugs(data, inits, parameters,
+	 			model.file ="cpt_hierarchical_ model.txt",
+	 			n.chains=1, n.iter=10000, n.burnin=1000, n.thin=10,
+	 			DIC=T, bugs.directory=bugsdir,
+	 			codaPkg=F, debug=F)
+
+# Note that the returned variable in this example is called hierarchical. However, you can name it anyway you 
+# like.
+
+
+# Some useful commands:
+print(hierarchical)  # a rough summary
+names(hierarchical)  # summarizes the variables
+hierarchical$summary # more detailed summary
+plot(hierarchical)   # a visual representation
+
+# The alpha value sampled for participant 10 in the second round of the 1 chain:
+hierarchical$sims.array[2,1,"alpha[10]"] 
+
+# Mean alpha for all participants
+hierarchical$mean$alpha
